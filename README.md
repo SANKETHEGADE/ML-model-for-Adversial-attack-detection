@@ -17,7 +17,7 @@ A multi-scan diagnostic tool that classifies three types of medical images using
 - **Skin Lesion** → 7-class classification (e.g. melanoma, basal cell carcinoma, benign keratosis) using the HAM10000 dataset
 
 ### Tech stack
-- TensorFlow / Keras
+- TensorFlow / Keras 
 - MobileNetV2 (transfer learning, frozen base + custom classification head)
 - Gradio (web interface)
 - scikit-learn (class weighting for imbalanced datasets)
