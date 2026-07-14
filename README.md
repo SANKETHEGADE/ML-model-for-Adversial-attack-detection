@@ -27,7 +27,7 @@ Each scan type has its own MobileNetV2-based model, trained separately with clas
 
 ### How to run
 ```bash
-pip install tensorflow gradio pandas scikit-learn pillow
+pip install tensorflow gradio pandas scikit-learn pillow 
 
 # Train all three models (chest, brain, skin)
 python train_models.py
