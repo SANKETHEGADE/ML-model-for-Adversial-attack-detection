@@ -6,23 +6,23 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 import os
 
-# ================= DEVICE =================
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# ================= TRANSFORM =================
+
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor()
 ])
 
-# ================= LOAD DATA =================
+
 dataset = torchvision.datasets.ImageFolder("dataset/train", transform=transform)
 loader = torch.utils.data.DataLoader(dataset, batch_size=16, shuffle=True)
 
 num_classes = len(dataset.classes)
 print("Classes:", dataset.classes, f"({num_classes} classes)")
 
-# ================= MODEL =================
+
 class CNN(nn.Module):
     def __init__(self, num_classes):
         super(CNN, self).__init__()
@@ -48,16 +48,14 @@ class CNN(nn.Module):
         x = x.view(x.size(0), -1)
         return self.fc(x)
 
-# num_classes is now read from the dataset instead of hardcoded to 2 --
-# the old version would crash on loss.backward() if dataset/train had
-# more than 2 class folders.
+
 model = CNN(num_classes).to(device)
 
-# ================= LOSS =================
+
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# ================= TRAIN =================
+
 print("Training model...")
 
 for epoch in range(10):
@@ -77,11 +75,7 @@ for epoch in range(10):
 
 print("Model trained successfully")
 
-# ================= TRAIN ACCURACY CHECK =================
-# If this is low, FGSM/BIM/PGD will have an easy time flipping labels --
-# but if it's *very* low, the model barely learned the task at all and
-# "adversarial" perturbations become meaningless (nothing was really
-# being fooled). Worth eyeballing before trusting the generated dataset.
+
 model.eval()
 correct, total = 0, 0
 with torch.no_grad():
@@ -92,16 +86,16 @@ with torch.no_grad():
         total += target.size(0)
 print(f"Surrogate train accuracy: {100*correct/total:.2f}%")
 
-# ================= SAVE MODEL =================
+
 torch.save(model.state_dict(), "model.pth")
 print("Base model saved as model.pth")
 
-# ================= FGSM =================
+
 def fgsm_attack(image, epsilon, data_grad):
     perturbed = image + epsilon * data_grad.sign()
     return torch.clamp(perturbed, 0, 1)
 
-# ================= BIM =================
+
 def bim_attack(model, images, labels, epsilon=0.1, alpha=0.01, iters=10):
     original = images.clone().detach()
     perturbed = images.clone().detach()
@@ -123,7 +117,7 @@ def bim_attack(model, images, labels, epsilon=0.1, alpha=0.01, iters=10):
 
     return perturbed
 
-# ================= PGD =================
+
 def pgd_attack(model, images, labels, epsilon=0.1, alpha=0.01, iters=10):
     original = images.clone().detach()
 
@@ -147,14 +141,14 @@ def pgd_attack(model, images, labels, epsilon=0.1, alpha=0.01, iters=10):
 
     return perturbed
 
-# ================= C&W (L2, tanh-space) =================
+
 def cw_attack(model, images, labels, steps=50, lr=0.01, c=1.0):
     images = images.clone().detach()
     w = torch.atanh((images * 2 - 1).clamp(-0.999, 0.999)).clone().detach().requires_grad_(True)
     optimizer_cw = torch.optim.Adam([w], lr=lr)
 
     for _ in range(steps):
-        adv = 0.5 * torch.tanh(w) + 0.5  # stays in [0,1] by construction
+        adv = 0.5 * torch.tanh(w) + 0.5 
         outputs = model(adv)
 
         cls_loss = -criterion(outputs, labels)
@@ -168,9 +162,9 @@ def cw_attack(model, images, labels, steps=50, lr=0.01, c=1.0):
     adv_images = 0.5 * torch.tanh(w) + 0.5
     return torch.clamp(adv_images, 0, 1).detach()
 
-# ================= DEEPFOOL (per-image) =================
+
 def _deepfool_single(model, image, num_classes, overshoot=0.02, max_iter=50):
-    # image: (1, C, H, W)
+    
     image = image.clone().detach()
     output = model(image)
     label = torch.argmax(output, dim=1)
@@ -229,7 +223,7 @@ def deepfool_attack(model, images, num_classes):
         model.train()
     return torch.stack(results, dim=0)
 
-# ================= SUCCESS CHECK =================
+
 def attack_success_mask(model, perturbed_images, true_labels):
     """
     Returns a boolean tensor: True where the perturbed image actually
@@ -250,18 +244,16 @@ def attack_success_mask(model, perturbed_images, true_labels):
     model.train()
     return preds != true_labels
 
-# ================= SAVE PATHS =================
+
 normal_path = "detector_dataset/normal"
 adv_path = "detector_dataset/adversarial"
 
 os.makedirs(normal_path, exist_ok=True)
 os.makedirs(adv_path, exist_ok=True)
 
-TARGET_PER_CLASS = 150  # normal count, and adversarial count (balanced)
+TARGET_PER_CLASS = 150 
 ATTACK_NAMES = ["fgsm", "bim", "pgd", "cw", "deepfool"]
-TARGET_PER_ATTACK = TARGET_PER_CLASS // len(ATTACK_NAMES)  # 30 each -- fixed
-# quota per attack type instead of a shared pool, so DeepFool can no longer
-# get crowded out just because it sits last in the dict/order.
+TARGET_PER_ATTACK = TARGET_PER_CLASS // len(ATTACK_NAMES) 
 
 normal_count = 0
 adv_count = 0
@@ -283,7 +275,7 @@ for data, target in loader:
 
     data, target = data.to(device), target.to(device)
 
-    # ================= SAVE NORMAL IMAGES =================
+
     if normal_count < TARGET_PER_CLASS:
         for img_tensor in data:
             if normal_count >= TARGET_PER_CLASS:
@@ -295,7 +287,7 @@ for data, target in loader:
     if all_attack_quotas_met():
         continue
 
-    # ================= GENERATE GRADIENT (for FGSM) =================
+  
     data_for_grad = data.clone().detach().requires_grad_(True)
     output = model(data_for_grad)
     loss = criterion(output, target)
@@ -303,14 +295,12 @@ for data, target in loader:
     loss.backward()
     data_grad = data_for_grad.grad.data
 
-    # ================= GENERATE ATTACKS =================
+   
     fgsm_data = fgsm_attack(data, 0.1, data_grad)
     bim_data = bim_attack(model, data.clone(), target)
     pgd_data = pgd_attack(model, data.clone(), target)
     cw_data = cw_attack(model, data.clone(), target)
-    # DeepFool is expensive (per-image gradient passes), but capping it at
-    # 4/batch while other attacks get the full batch is what was starving
-    # it out of the saved dataset -- use the full batch like the others.
+   
     deepfool_slice = data.size(0)
     deepfool_data = deepfool_attack(model, data[:deepfool_slice].clone(), num_classes)
     deepfool_targets = target[:deepfool_slice]
