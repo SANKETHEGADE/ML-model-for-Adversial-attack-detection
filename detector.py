@@ -23,13 +23,13 @@ import torch.optim as optim
 from collections import Counter
 from sklearn.metrics import confusion_matrix, classification_report
 
-# ================= TRANSFORM =================
+
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor()
 ])
 
-# ================= LOAD DATA =================
+
 dataset = torchvision.datasets.ImageFolder("detector_dataset", transform=transform)
 print("Classes:", dataset.classes)
 
@@ -40,7 +40,7 @@ if len(set(label_counts.values())) > 1:
     print(f"⚠ Class imbalance ratio: {ratio:.2f}x "
           f"(consider running prepare_normal_dataset.py to balance counts)")
 
-# ================= BALANCED TRAIN/TEST SPLIT =================
+
 train_size = int(0.8 * len(dataset))
 test_size = len(dataset) - train_size
 
@@ -49,7 +49,7 @@ train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
-# ================= CNN MODEL =================
+
 class DetectorCNN(nn.Module):
 
     def __init__(self):
@@ -82,11 +82,11 @@ class DetectorCNN(nn.Module):
         x = self.fc(x)
         return x
 
-# ================= MODEL =================
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = DetectorCNN().to(device)
 
-# ================= LOSS + OPTIMIZER (class-weighted) =================
+
 num_classes = len(dataset.classes)
 total = sum(label_counts.values())
 class_weights = torch.tensor([
@@ -95,14 +95,11 @@ class_weights = torch.tensor([
 print("Loss class weights:", {dataset.classes[i]: round(w.item(), 3)
                                for i, w in enumerate(class_weights)})
 
-# label_smoothing=0.1 stops training from pushing logits to extremes just to
-# satisfy a hard 0/1 target -- this is the direct fix for confidence pinning
-# at 100%. weight_decay adds L2 regularization, which fights the overfitting
-# that a 100%-confidence model on a ~300-image dataset is a symptom of.
+
 criterion = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=0.1)
 optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=1e-4)
 
-# ================= TRAINING =================
+
 epochs = 10
 print("\nTraining Detector...\n")
 
@@ -127,11 +124,11 @@ for epoch in range(epochs):
 
 print("\n✅ Detector trained successfully")
 
-# ================= SAVE MODEL =================
+
 torch.save(model.state_dict(), "detector_model.pth")
 print("✅ Model saved successfully")
 
-# ================= TEST: ACCURACY + CONFUSION MATRIX =================
+
 model.eval()
 
 all_preds = []
@@ -165,14 +162,7 @@ print("👉 If 'adversarial' recall is low here, the model genuinely isn't "
       "learning to catch adversarial images -- that's a training/data "
       "problem, separate from the confidence-threshold bug in app.py.")
 
-# ================= TEMPERATURE SCALING (confidence calibration) =================
-# label_smoothing softens overconfidence during training, but a small/simple
-# CNN can still saturate. Temperature scaling is the standard post-hoc fix
-# (Guo et al., 2017): divide the raw logits by a learned scalar T > 1 before
-# softmax. It does NOT change which class wins (no accuracy change, no
-# hand-tuned cutoff like the old "<75% -> force normal" rule) -- it only
-# reshapes how spread out the confidence values are, so a genuinely-90%-sure
-# prediction reads as ~90% instead of saturating to 100%.
+
 print("\nFitting temperature scaling on the held-out test split...")
 
 logits_list, labels_list = [], []
@@ -196,7 +186,7 @@ def _temp_closure():
     return loss
 
 temp_optimizer.step(_temp_closure)
-fitted_T = max(temperature.item(), 1.0)  # never sharpen, only soften
+fitted_T = max(temperature.item(), 1.0)  
 print(f"✅ Fitted temperature: {fitted_T:.3f}")
 
 with open("temperature.json", "w") as f:
