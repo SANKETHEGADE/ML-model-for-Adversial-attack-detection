@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}NeuralShield — Register Original{% endblock %}
+{% block nav_register %}active{% endblock %}
+
+{% block content %}
+  <h1>Register Original X-ray</h1>
+  <p class="subtitle">Certify a genuine X-ray on-chain. Its hash becomes the source of truth used to verify authenticity later.</p>
+
+  <div class="card">
+    <form method="POST" enctype="multipart/form-data">
+      <label for="patient_id">Patient ID</label>
+      <input type="text" id="patient_id" name="patient_id" placeholder="e.g. P-00231" required>
+
+      <label for="disease">Disease / Report</label>
+      <input type="text" id="disease" name="disease" placeholder="e.g. Pneumonia" required>
+
+      <label for="file">Original X-ray image</label>
+      <input type="file" id="file" name="file" accept="image/*" required>
+
+      <button type="submit">Register on Chain</button>
+    </form>
+  </div>
+
+  {% if error %}
+  <div class="error-box">{{ error }}</div>
+  {% endif %}
+
+  {% if block_info %}
+  <div class="card">
+    <div class="result-row">
+      <span class="result-label">Block</span>
+      <span class="result-value">#{{ block_info.index }}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Patient</span>
+      <span class="result-value">{{ block_info.patient_id }}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Disease</span>
+      <span class="result-value">{{ block_info.disease }}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Image Hash</span>
+      <span class="mono">{{ block_info.image_hash }}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Block Hash</span>
+      <span class="mono">{{ block_info.hash }}</span>
+    </div>
+
+    {% if qr_data_uri %}
+    <img class="qr" src="{{ qr_data_uri }}" alt="QR code for this report">
+    {% endif %}
+  </div>
+  {% endif %}
+{% endblock %}

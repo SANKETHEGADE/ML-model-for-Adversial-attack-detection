@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}NeuralShield — Chain Log{% endblock %}
+{% block nav_chain %}active{% endblock %}
+
+{% block content %}
+  <h1>Blockchain Ledger</h1>
+  <p class="subtitle">Every certified original X-ray, most recent first.</p>
+
+  <div class="chain-status">
+    {% if valid %}
+      ✅ Chain integrity: valid
+    {% else %}
+      ⚠ Chain integrity: BROKEN — {{ reason }}
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <table>
+      <tr>
+        <th>Block</th>
+        <th>Patient</th>
+        <th>Disease</th>
+        <th>Image Hash</th>
+      </tr>
+      {% for block in chain %}
+      <tr>
+        <td>#{{ block.index }}</td>
+        <td>{{ block.patient_id }}</td>
+        <td>{{ block.disease }}</td>
+        <td class="mono">{{ block.image_hash[:16] }}…</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

@@ -129,8 +129,11 @@
     padding: 64px 24px 80px;
   }
 
+  /* tab radios are pure state, never shown */
+  .page > input[type="radio"] { display: none; }
+
   /* ── HERO ── */
-  .hero { margin-bottom: 44px; animation: fadeUp 0.6s ease both; }
+  .hero { margin-bottom: 36px; animation: fadeUp 0.6s ease both; }
   .eyebrow {
     font-family: var(--mono);
     font-size: 11px;
@@ -146,13 +149,13 @@
     line-height: 1.02;
     color: #fff;
     margin-bottom: 18px;
-    max-width: 12ch;
+    max-width: 14ch;
   }
   .tagline {
     font-size: 16px;
     color: var(--muted);
     font-weight: 400;
-    max-width: 46ch;
+    max-width: 50ch;
     line-height: 1.55;
   }
 
@@ -171,6 +174,40 @@
     border: 1px solid var(--border);
     color: var(--muted);
     background: var(--surface);
+  }
+
+  /* ── TAB BAR ── */
+  .tab-nav {
+    display: flex;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 5px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.05s ease both;
+  }
+  .tab-nav label {
+    flex: 1;
+    text-align: center;
+    padding: 11px 10px;
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .tab-nav label:hover { color: var(--text); }
+
+  #tab-detect:checked ~ .tab-nav label[for="tab-detect"],
+  #tab-register:checked ~ .tab-nav label[for="tab-register"],
+  #tab-chain:checked ~ .tab-nav label[for="tab-chain"] {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    color: #050005;
   }
 
   /* ── MAIN CARD ── */
@@ -221,8 +258,39 @@
     animation: pulse 2s ease infinite;
   }
 
+  /* panels swap via the tab radios above */
+  .panel { display: none; }
+  #tab-detect:checked   ~ .card #panel-detect,
+  #tab-register:checked ~ .card #panel-register,
+  #tab-chain:checked    ~ .card #panel-chain {
+    display: block;
+  }
+
   /* ── UPLOAD ZONE ── */
   .upload-section { padding: 32px 26px; position: relative; }
+
+  .field-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 9px;
+    text-transform: uppercase;
+  }
+  .field-input {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  .field-input::placeholder { color: var(--muted-2); }
+  .field-input:focus { outline: none; border-color: var(--accent); }
 
   .drop-zone {
     border: 1.5px dashed var(--border-strong);
@@ -275,7 +343,7 @@
     letter-spacing: 0.04em;
   }
 
-  #file-preview {
+  .file-preview-box {
     margin-top: 16px;
     display: none;
     align-items: center;
@@ -340,6 +408,18 @@
     10%  { opacity: 1; }
     90%  { opacity: 1; }
     100% { top: 100%; opacity: 0; }
+  }
+
+  .error-box {
+    background: rgba(255,92,92,0.06);
+    border: 1px solid rgba(255,92,92,0.3);
+    color: #ffb4b4;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    margin-top: 18px;
+    font-family: var(--sans);
+    line-height: 1.5;
   }
 
   /* ── RESULT ── */
@@ -470,6 +550,96 @@
     letter-spacing: 0.02em;
   }
 
+  /* ── blockchain-specific additions ── */
+  .chain-verdict {
+    margin-top: 14px;
+    padding: 18px 20px;
+  }
+  .chain-verdict .verdict-value {
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 700;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .info-row:last-of-type { border-bottom: none; }
+  .info-key {
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    font-size: 10.5px;
+  }
+  .info-val {
+    color: var(--text);
+    font-weight: 600;
+    text-align: right;
+    word-break: break-all;
+  }
+
+  img.qr-image {
+    display: block;
+    margin: 22px auto 0;
+    width: 180px;
+    height: 180px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #fff;
+    padding: 10px;
+  }
+
+  .chain-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 9px 15px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    margin-bottom: 22px;
+    text-transform: uppercase;
+  }
+  .chain-status-pill .status-dot { box-shadow: none; }
+  .chain-status-pill.valid  { color: var(--safe);   border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.05); }
+  .chain-status-pill.valid .status-dot { background: var(--safe); }
+  .chain-status-pill.broken { color: var(--danger); border-color: rgba(255,92,92,0.3); background: rgba(255,92,92,0.05); }
+  .chain-status-pill.broken .status-dot { background: var(--danger); }
+
+  .chain-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .chain-table th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    font-size: 10px;
+  }
+  .chain-table td {
+    padding: 11px 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    word-break: break-all;
+  }
+  .chain-table tr:last-child td { border-bottom: none; }
+
   .footer {
     text-align: center;
     margin-top: 40px;
@@ -499,11 +669,13 @@
     <span><b>ATTACKS</b> FGSM / BIM / PGD / C&amp;W / DEEPFOOL</span>
     <span><b>INPUT</b> 224×224</span>
     <span><b>CLASSES</b> ADVERSARIAL / NORMAL</span>
+    <span><b>LEDGER</b> SHA-256 PROOF-OF-WORK</span>
     <span><b>STATUS</b> ONLINE</span>
     <span><b>MODEL</b> 3-LAYER CNN</span>
     <span><b>ATTACKS</b> FGSM / BIM / PGD / C&amp;W / DEEPFOOL</span>
     <span><b>INPUT</b> 224×224</span>
     <span><b>CLASSES</b> ADVERSARIAL / NORMAL</span>
+    <span><b>LEDGER</b> SHA-256 PROOF-OF-WORK</span>
     <span><b>STATUS</b> ONLINE</span>
   </div>
 </div>
@@ -521,159 +693,287 @@
 
 <div class="page">
 
+  <!-- tab state -->
+  <input type="radio" name="tabgroup" id="tab-detect"   {% if active_tab == 'detect' %}checked{% endif %}>
+  <input type="radio" name="tabgroup" id="tab-register" {% if active_tab == 'register' %}checked{% endif %}>
+  <input type="radio" name="tabgroup" id="tab-chain"    {% if active_tab == 'chain' %}checked{% endif %}>
+
   <div class="hero">
-    <div class="eyebrow">Adversarial Image Detection</div>
-    <h1>Perturbation leaves a signature.</h1>
-    <p class="tagline">Upload a medical image and the classifier checks it against the patterns FGSM, BIM, PGD, C&amp;W, and DeepFool leave behind — even when the changes are invisible to you.</p>
+    <div class="eyebrow">Adversarial Detection + Blockchain Verification</div>
+    <h1>Perturbation leaves a signature. So does tampering.</h1>
+    <p class="tagline">Upload a medical image and the classifier checks it against the patterns FGSM, BIM, PGD, C&amp;W, and DeepFool leave behind. Certify a genuine X-ray on-chain once, and any copy of it can be verified byte-for-byte, forever.</p>
     <div class="chips">
       <span class="chip">FGSM</span>
       <span class="chip">BIM</span>
       <span class="chip">PGD</span>
       <span class="chip">C&amp;W</span>
       <span class="chip">DEEPFOOL</span>
+      <span class="chip">SHA-256</span>
     </div>
+  </div>
+
+  <div class="tab-nav">
+    <label for="tab-detect">Scanner</label>
+    <label for="tab-register">Register Original</label>
+    <label for="tab-chain">Chain Log</label>
   </div>
 
   <div class="card" id="main-card">
 
     <div class="card-header">
-      <span class="card-header-title">SCANNER</span>
+      <span class="card-header-title">NEURALSHIELD SYSTEM</span>
       <span class="card-header-live"><span class="live-dot"></span>READY</span>
     </div>
 
-    <div class="upload-section">
-      <form method="POST" enctype="multipart/form-data" id="upload-form">
+    <!-- ================= SCANNER PANEL ================= -->
+    <div class="panel" id="panel-detect">
+      <div class="upload-section">
+        <form method="POST" enctype="multipart/form-data" id="detect-form">
+          <input type="hidden" name="action" value="detect">
 
-        <div class="drop-zone" id="drop-zone">
-          <input type="file" name="file" id="file-input" accept="image/*" required>
-          <div class="upload-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-            </svg>
+          <div class="drop-zone" id="drop-zone">
+            <input type="file" name="file" id="file-input" accept="image/*" required>
+            <div class="upload-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+              </svg>
+            </div>
+            <p class="drop-label">Drop medical image here</p>
+            <p class="drop-sub">PNG / JPG / JPEG — click to browse</p>
           </div>
-          <p class="drop-label">Drop medical image here</p>
-          <p class="drop-sub">PNG / JPG / JPEG — click to browse</p>
+
+          <div class="file-preview-box" id="file-preview">
+            <div class="file-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+              </svg>
+            </div>
+            <div class="file-meta">
+              <div class="file-name" id="fname">—</div>
+              <div class="file-size" id="fsize">—</div>
+            </div>
+            <div class="file-check">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="btn-wrap">
+            <button type="submit" class="btn-analyze">Analyze Image</button>
+          </div>
+        </form>
+      </div>
+
+      {% if filename %}
+      <div class="divider"></div>
+      <div class="result-panel">
+
+        <div class="result-label">SCAN RESULT</div>
+
+        <div class="image-display">
+          <img src="{{ url_for('static', filename=filename) }}" alt="Scanned image">
+          <div class="image-overlay">{{ filename }}</div>
         </div>
 
-        <div id="file-preview">
-          <div class="file-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.5">
-              <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
-            </svg>
+        <div class="result-main">
+          <div class="verdict-box {{ 'verdict-danger' if prediction == 'adversarial' else 'verdict-safe' }}">
+            <div class="verdict-title">CLASSIFICATION</div>
+            <div class="verdict-value">{{ 'ADVERSARIAL' if prediction == 'adversarial' else 'NORMAL' }}</div>
           </div>
-          <div class="file-meta">
-            <div class="file-name" id="fname">—</div>
-            <div class="file-size" id="fsize">—</div>
-          </div>
-          <div class="file-check">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
+
+          <div class="conf-box">
+            <div class="conf-title">CONFIDENCE SCORE</div>
+            <div class="conf-number">{{ confidence }}<span>%</span></div>
+            <div class="conf-track">
+              <div class="conf-fill" style="width: {{ confidence }}%; background: {{ 'linear-gradient(90deg,#ff5c5c,#fb923c)' if prediction == 'adversarial' else 'linear-gradient(90deg,#22d3ee,#34d399)' }};"></div>
+            </div>
           </div>
         </div>
 
-        <div class="btn-wrap">
-          <button type="submit" class="btn-analyze">Analyze Image</button>
+        <div class="stats-row">
+          <div class="stat-cell">
+            <div class="stat-val">224×224</div>
+            <div class="stat-key">Input Size</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-val">CNN</div>
+            <div class="stat-key">Architecture</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-val">{{ 'HIGH' if confidence > 85 else 'MED' }}</div>
+            <div class="stat-key">Certainty</div>
+          </div>
         </div>
-      </form>
+
+        {% if blockchain_status %}
+        <div class="verdict-box chain-verdict {{ 'verdict-safe' if blockchain_class == 'verified' else 'verdict-danger' }}">
+          <div class="verdict-title">🔗 BLOCKCHAIN VERIFICATION</div>
+          <div class="verdict-value">{{ blockchain_status }}</div>
+        </div>
+        {% endif %}
+
+      </div>
+      {% endif %}
     </div>
 
-    {% if filename %}
-    <div class="divider"></div>
-    <div class="result-panel">
+    <!-- ================= REGISTER PANEL ================= -->
+    <div class="panel" id="panel-register">
+      <div class="upload-section">
+        <form method="POST" enctype="multipart/form-data" id="register-form">
+          <input type="hidden" name="action" value="register">
 
-      <div class="result-label">SCAN RESULT</div>
+          <label class="field-label" for="patient_id">Patient ID</label>
+          <input class="field-input" type="text" id="patient_id" name="patient_id" placeholder="P-00231" required>
 
-      <div class="image-display">
-        <img src="{{ url_for('static', filename=filename) }}" alt="Scanned image">
-        <div class="image-overlay">{{ filename }}</div>
-      </div>
+          <label class="field-label" for="disease">Disease / Report</label>
+          <input class="field-input" type="text" id="disease" name="disease" placeholder="Pneumonia" required>
 
-      <div class="result-main">
-        <div class="verdict-box {{ 'verdict-danger' if prediction == 'adversarial' else 'verdict-safe' }}">
-          <div class="verdict-title">CLASSIFICATION</div>
-          <div class="verdict-value">{{ 'ADVERSARIAL' if prediction == 'adversarial' else 'NORMAL' }}</div>
-        </div>
-
-        <div class="conf-box">
-          <div class="conf-title">CONFIDENCE SCORE</div>
-          <div class="conf-number">{{ confidence }}<span>%</span></div>
-          <div class="conf-track">
-            <div class="conf-fill" style="width: {{ confidence }}%; background: {{ 'linear-gradient(90deg,#ff5c5c,#fb923c)' if prediction == 'adversarial' else 'linear-gradient(90deg,#22d3ee,#34d399)' }};"></div>
+          <div class="drop-zone" id="drop-zone-register">
+            <input type="file" name="file" id="file-input-register" accept="image/*" required>
+            <div class="upload-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+              </svg>
+            </div>
+            <p class="drop-label">Drop original X-ray here</p>
+            <p class="drop-sub">This becomes the certified on-chain reference</p>
           </div>
-        </div>
+
+          <div class="file-preview-box" id="file-preview-register">
+            <div class="file-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+              </svg>
+            </div>
+            <div class="file-meta">
+              <div class="file-name" id="fname-register">—</div>
+              <div class="file-size" id="fsize-register">—</div>
+            </div>
+            <div class="file-check">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="btn-wrap">
+            <button type="submit" class="btn-analyze">Register on Chain</button>
+          </div>
+        </form>
+
+        {% if register_error %}
+        <div class="error-box">{{ register_error }}</div>
+        {% endif %}
       </div>
 
-      <div class="stats-row">
-        <div class="stat-cell">
-          <div class="stat-val">224×224</div>
-          <div class="stat-key">Input Size</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-val">CNN</div>
-          <div class="stat-key">Architecture</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-val">{{ 'HIGH' if confidence > 85 else 'MED' }}</div>
-          <div class="stat-key">Certainty</div>
-        </div>
-      </div>
+      {% if block_info %}
+      <div class="divider"></div>
+      <div class="result-panel">
+        <div class="result-label">CERTIFICATION RECEIPT</div>
 
+        <div class="info-row"><span class="info-key">Block</span><span class="info-val">#{{ block_info.index }}</span></div>
+        <div class="info-row"><span class="info-key">Patient</span><span class="info-val">{{ block_info.patient_id }}</span></div>
+        <div class="info-row"><span class="info-key">Disease</span><span class="info-val">{{ block_info.disease }}</span></div>
+        <div class="info-row"><span class="info-key">Image Hash</span><span class="info-val">{{ block_info.image_hash }}</span></div>
+        <div class="info-row"><span class="info-key">Block Hash</span><span class="info-val">{{ block_info.hash }}</span></div>
+
+        {% if qr_data_uri %}
+        <img class="qr-image" src="{{ qr_data_uri }}" alt="QR code for this report">
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
+
+    <!-- ================= CHAIN LOG PANEL ================= -->
+    <div class="panel" id="panel-chain">
+      <div class="result-panel">
+        <div class="result-label">AUDIT LOG</div>
+
+        <div class="chain-status-pill {{ 'valid' if chain_valid else 'broken' }}">
+          <span class="status-dot"></span>
+          {% if chain_valid %}CHAIN INTEGRITY: VALID{% else %}CHAIN INTEGRITY: BROKEN — {{ chain_reason }}{% endif %}
+        </div>
+
+        <table class="chain-table">
+          <tr>
+            <th>Block</th>
+            <th>Patient</th>
+            <th>Disease</th>
+            <th>Image Hash</th>
+          </tr>
+          {% for block in chain %}
+          <tr>
+            <td>#{{ block.index }}</td>
+            <td>{{ block.patient_id }}</td>
+            <td>{{ block.disease }}</td>
+            <td>{{ block.image_hash[:16] }}…</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
 
   </div>
 
   <div class="footer">
-    Built with PyTorch · Flask · Adversarial ML Research Project
+    Built with PyTorch · Flask · Blockchain · Adversarial ML Research Project
   </div>
 
 </div>
 
 <script>
-  const input   = document.getElementById('file-input');
-  const preview = document.getElementById('file-preview');
-  const fname   = document.getElementById('fname');
-  const fsize   = document.getElementById('fsize');
-  const dropZ   = document.getElementById('drop-zone');
-  const form    = document.getElementById('upload-form');
-  const card    = document.getElementById('main-card');
-
-  function fmt(b) {
+  function fmtSize(b) {
     if (b < 1024) return b + ' B';
     if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
     return (b/1048576).toFixed(1) + ' MB';
   }
 
-  input.addEventListener('change', function() {
-    if (this.files[0]) {
-      fname.textContent = this.files[0].name;
-      fsize.textContent = fmt(this.files[0].size);
-      preview.style.display = 'flex';
-    }
-  });
+  function setupDropZone(zoneId, inputId, previewId, fnameId, fsizeId) {
+    const zone = document.getElementById(zoneId);
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    const fname = document.getElementById(fnameId);
+    const fsize = document.getElementById(fsizeId);
+    if (!zone) return;
 
-  ['dragover','dragenter'].forEach(e => dropZ.addEventListener(e, ev => {
-    ev.preventDefault();
-    dropZ.classList.add('dragover');
-  }));
-  ['dragleave','drop'].forEach(e => dropZ.addEventListener(e, ev => {
-    ev.preventDefault();
-    dropZ.classList.remove('dragover');
-  }));
-  dropZ.addEventListener('drop', ev => {
-    const f = ev.dataTransfer.files[0];
-    if (f) {
-      input.files = ev.dataTransfer.files;
-      fname.textContent = f.name;
-      fsize.textContent = fmt(f.size);
-      preview.style.display = 'flex';
-    }
-  });
+    input.addEventListener('change', function() {
+      if (this.files[0]) {
+        fname.textContent = this.files[0].name;
+        fsize.textContent = fmtSize(this.files[0].size);
+        preview.style.display = 'flex';
+      }
+    });
 
-  form.addEventListener('submit', () => {
-    card.classList.add('scanning');
-    document.querySelector('.btn-analyze').textContent = 'Scanning…';
+    ['dragover','dragenter'].forEach(e => zone.addEventListener(e, ev => {
+      ev.preventDefault();
+      zone.classList.add('dragover');
+    }));
+    ['dragleave','drop'].forEach(e => zone.addEventListener(e, ev => {
+      ev.preventDefault();
+      zone.classList.remove('dragover');
+    }));
+    zone.addEventListener('drop', ev => {
+      const f = ev.dataTransfer.files[0];
+      if (f) {
+        input.files = ev.dataTransfer.files;
+        fname.textContent = f.name;
+        fsize.textContent = fmtSize(f.size);
+        preview.style.display = 'flex';
+      }
+    });
+  }
+
+  setupDropZone('drop-zone', 'file-input', 'file-preview', 'fname', 'fsize');
+  setupDropZone('drop-zone-register', 'file-input-register', 'file-preview-register', 'fname-register', 'fsize-register');
+
+  const card = document.getElementById('main-card');
+  document.querySelectorAll('#detect-form, #register-form').forEach(form => {
+    form.addEventListener('submit', function() {
+      card.classList.add('scanning');
+      const btn = this.querySelector('.btn-analyze');
+      if (btn) btn.textContent = 'Processing…';
+    });
   });
 </script>
 </body>
