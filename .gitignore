@@ -1,0 +1,38 @@
+# ── Patient data / privacy ──
+# These contain real or test patient IDs, diagnoses, and X-ray images.
+# Never commit these, even for a demo/college project.
+blockchain_data.json
+static/originals/
+
+# ── Large / regeneratable data ──
+detector_dataset/
+dataset/
+test_images/
+
+# ── Trained model weights ──
+# Large binary, doesn't diff meaningfully in git, and regeneratable
+# by rerunning detector.py. If you want the trained model available
+# to graders/reviewers without retraining, use GitHub Releases or
+# Git LFS instead of committing it directly.
+*.pth
+
+# ── Runtime-uploaded / generated images ──
+static/*.png
+static/*.jpg
+static/*.jpeg
+!static/originals/.gitkeep
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+env/
+*.egg-info/
+
+# ── Editor / OS junk ──
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
