@@ -1,4 +1,4 @@
-# NeuralShield
+# NeuralShield 
 
 **Adversarial X-ray detection, backed by a blockchain ledger of certified originals.**
 
