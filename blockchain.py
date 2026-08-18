@@ -42,7 +42,7 @@ class Block:
         self.timestamp = timestamp
         self.patient_id = patient_id
         self.disease = disease
-        self.image_hash = image_hash          # SHA-256 of the X-ray image bytes
+        self.image_hash = image_hash          
         self.previous_hash = previous_hash
         self.nonce = nonce
         self.hash = hash_ or self.compute_hash()
@@ -77,7 +77,7 @@ class Block:
                      d["image_hash"], d["previous_hash"], d["nonce"], d["hash"])
 
 
-DIFFICULTY = 4  # leading zeros required in a valid block hash -- tune for speed vs. tamper cost
+DIFFICULTY = 4 
 CHAIN_FILE = "blockchain_data.json"
 
 
@@ -87,7 +87,7 @@ class Blockchain:
         self.chain = []
         self._load_or_create()
 
-    # ---------- persistence ----------
+    
     def _load_or_create(self):
         if os.path.exists(self.chain_file):
             with open(self.chain_file, "r") as f:
@@ -110,7 +110,7 @@ class Blockchain:
         with open(self.chain_file, "w") as f:
             json.dump([b.to_dict() for b in self.chain], f, indent=2)
 
-    # ---------- core ops ----------
+   
     def _mine(self, block):
         target = "0" * DIFFICULTY
         while not block.hash.startswith(target):
@@ -136,7 +136,7 @@ class Blockchain:
     def find_by_image_hash(self, image_hash):
         """Returns the block certifying this exact image, or None if this
         exact image was never registered as an original."""
-        for block in reversed(self.chain):  # most recent registration wins
+        for block in reversed(self.chain):  
             if block.image_hash == image_hash:
                 return block
         return None
