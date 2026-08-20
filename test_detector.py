@@ -4,16 +4,16 @@ import torchvision.transforms as transforms
 from PIL import Image
 import os
 
-# ================= DEVICE =================
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# ================= TRANSFORM =================
+
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor()
 ])
 
-# ================= CNN MODEL =================
+
 class DetectorCNN(nn.Module):
 
     def __init__(self):
@@ -46,12 +46,12 @@ class DetectorCNN(nn.Module):
         x = self.fc(x)
         return x
 
-# ================= LOAD MODEL =================
+
 model = DetectorCNN().to(device)
 model.load_state_dict(torch.load("detector_model.pth", map_location=device))
 model.eval()
 
-# ================= CONFIDENCE CALIBRATION =================
+
 import json
 try:
     with open("temperature.json") as f:
@@ -61,13 +61,13 @@ except FileNotFoundError:
     TEMPERATURE = 1.0
     print("⚠ temperature.json not found -- confidence will be uncalibrated.")
 
-# ================= CLASS NAMES =================
+
 classes = ["adversarial", "normal"]
 
-# ================= TEST FOLDER =================
+
 test_folder = "test_images"
 
-# ================= PREDICTION =================
+
 tally = {"adversarial": 0, "normal": 0, "error": 0}
 
 for filename in os.listdir(test_folder):
@@ -87,9 +87,6 @@ for filename in os.listdir(test_folder):
         label = classes[predicted.item()]
         conf = confidence.item() * 100
 
-        # NOTE: the old hardcoded rule that force-relabeled low-confidence
-        # "adversarial" predictions as "normal" has been removed -- it was
-        # the main reason adversarial images kept showing up as "normal".
 
         tally[label] += 1
 
