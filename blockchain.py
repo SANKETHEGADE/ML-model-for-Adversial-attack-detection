@@ -8,7 +8,7 @@ Why this exists (separate from the CNN adversarial detector):
   image looks perturbed. It can be fooled, especially by attacks like
   DeepFool that are designed to produce minimal, hard-to-notice perturbations.
 - A blockchain hash check is DETERMINISTIC: if even a single pixel of a
-  registered original X-ray is changed, its SHA-256 hash changes completely
+  registered original X-ray is changed, its SHA-256 hash changes completely 
   (avalanche effect), so tampering is caught with certainty -- not a
   probability -- as long as the original was registered on-chain first.
 
